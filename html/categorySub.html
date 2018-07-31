@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui/aui.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="app" class=".aui-content">
+        <header class="aui-bar aui-bar-nav">
+            <a class="aui-pull-left aui-btn" onclick="closewin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title">{{ name }}</div>
+        </header>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        vm.name = api.pageParam.name;
+        vm.pid = api.pageParam.pid;
+        // alert(vm.pid);return false;
+        vm.init();
+    };
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            name: "",
+            pid: 0,
+            list: [],
+        },
+        methods: {
+            init: function() {
+                api.ajax({
+                    // url: 'category_sub_url',
+                    url:'http://studyfox.ganjie.biz/app/category/sub',
+                    method: 'post',
+                    data: {
+                        values: {
+                            pid: vm.pid,
+                        },
+                    }
+                }, function(ret, err) {
+                    if (ret) {
+                        // alert(JSON.stringify(ret));
+                        // console.log(JSON.stringify(ret));
+                          vm.list = ret.data.sub;
+                          var items = [];
+                          for(var i = 1;i < vm.list.length;i++){
+                              var item = {
+                                title : vm.list[i].name,
+                                bg : '#fff',
+                                bgSelected : 'widget://image/cc.png',
+                              };
+                              items.push(item);
+                          }
+                          //调用navigationBar模块api来实现子分类
+                          vm.loadNavigationBar(items);
+                    } else {
+                        // alert(JSON.stringify(err));
+                    }
+                });
+
+
+            },
+
+            //调用navigationBar模块api来实现子分类
+            loadNavigationBar: function(items) {
+              var navigationBar = api.require("navigationBar");
+              navigationBar.open({
+                  y: $api.dom('header').offsetHeight,
+                  w: api.frameWidth,
+                  h: 42,
+                  itemSize : {
+                      w : 90
+                  },
+                  items:items,
+                  font: {
+                        color: '#757575',
+                        size: 14,
+                        sizeSelected: 16,
+                        colorSelected: '#000033'
+                  },
+                  bg: '#f4f4f4',
+                  fixedOn: api.frameName,
+                  selectedIndex:0,
+              }, function(ret, err){
+                  if( ret ){
+                      // alert( JSON.stringify( ret ) );
+                      // console.log(JSON.stringify(ret));
+                      // console.log(JSON.stringify(vm.list[0].id));
+                      var cid = vm.list[ret.index].id;
+                      //取文章列表
+                      vm.loadArticleList(cid);
+
+                      //api监听cid变化
+                      api.sendEvent({
+                          name: 'listenCid',
+                          extra: {
+                              cid: cid,
+                          }
+                      });
+
+
+                  }else{
+                      // alert( JSON.stringify( err ) );
+                  }
+              });
+
+            },
+
+            //取文章列表
+            loadArticleList:function(cid){
+              api.openFrame({
+                  name: 'categorySubFrm',
+                  url: 'widget://html/categorySubFrm.html',
+                  rect: {
+                      x: 0,
+                      y: $api.dom('header').offsetHeight + 42,
+                      w: 'auto',
+                      h: api.winHeight - $api.dom('header').offsetHeight - 42,
+
+                  },
+                  pageParam: {
+                      cid: cid,
+                  },
+                  bounces: true,
+                  bgColor: 'rgba(0,0,0,0)',
+                  vScrollBarEnabled: true,
+                  hScrollBarEnabled: true
+              });
+
+
+            }
+
+        },
+    });
+</script>
+
+</html>

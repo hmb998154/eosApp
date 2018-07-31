@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>用户中心</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui/aui.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="app" class=".aui-content">
+
+      <header class="aui-bar aui-bar-nav">
+          <a class="aui-pull-left aui-btn" onclick="closewin()">
+              <span class="aui-iconfont aui-icon-left"></span>
+          </a>
+          <div class="aui-title">用户中心</div>
+      </header>
+
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+    //初始化加载
+    apiready = function() {
+        vm.init();
+    };
+
+    //vue加载
+    var vm = new Vue({
+        el: "#app",
+        data: {},
+        methods: {
+            init: function() {
+
+            },
+            others: function() {
+
+            },
+            /*添加其它方法*/
+        }
+    });
+</script>
+
+</html>

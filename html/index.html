@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>首页</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui/aui.css" />
+    <link rel="stylesheet" href="../css/swiper.min.css">
+    <style>
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #fff;
+            /* Center slide text vertically */
+            display: -webkit-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: center;
+            -ms-flex-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            -webkit-box-align: center;
+            -ms-flex-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class=".aui-content">
+        <!-- Swiper -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" v-for="vo in slider">
+                    <img v-bind:src="vo.url" />
+                </div>
+            </div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
+        </div>
+
+        <div class="aui-content aui-margin-b-15">
+
+            <ul class="aui-list aui-media-list" style="padding-top:1px;">
+                <section class="aui-content-padded">
+                    <h4><b>今日新闻</b></h4>
+                </section>
+                <li class="aui-list-item" v-for="(vo,index) in article">
+                    <div class="aui-media-list-item-inner" 　v-on:click="openArticle(index)">
+
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title">{{vo.title}}</div>
+                            </div>
+                            <div class="aui-info aui-margin-t-5" style="padding:1">
+                                <div class="aui-info-item">
+                                    <span class="aui-margin-l-5">{{vo.author}}</span>
+                                </div>
+                                <div class="aui-info-item">{{vo.create_time}}</div>
+                            </div>
+                        </div>
+                        <div class="aui-list-item-media" style="width:33%">
+                            <img v-bind:src="vo.url" style="border-radius:3px; ">
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<!-- Swiper JS -->
+<script src="../script/swiper.min.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        vm.init();
+
+        //下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...',
+            showTime: true
+        }, function(ret, err) {
+            //重置页码
+            vm.page = 1;
+            vm.init();
+            //恢复组件到默认状态
+            setTimeout('api.refreshHeaderLoadDone()', '800');
+        });
+
+        //上拉加载监听底部触发事件
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0 //滚动到底部时触发该事件
+            }
+        }, function(ret, err) {
+            //上拉加载数据
+            vm.init();
+        });
+
+
+    };
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            slider: [],
+            article: [],
+            page: 1,
+        },
+        methods: {
+            init: function() {
+                api.ajax({
+                    url: base_url,
+                    method: 'post',
+                    data: {
+                        values: {
+                            page: vm.page,
+                        }
+                    }
+                }, function(ret, err) {
+                    if (ret) {
+                        if (vm.page == 1) {
+                            // alert( JSON.stringify( ret ) );
+                            vm.slider = ret.data.slider;
+                            vm.article = ret.data.article.data;
+                            if (vm.slider) {
+                                setTimeout(function() {
+                                    vm.swiper();
+                                }, 80);
+                            }
+                        } else {
+                            //此处为非第1页数据，先判断是否有新数据
+                            if (ret.data.article.data.length > 0) {
+                                api.toast({
+                                    msg: '加载中...',
+                                    duration: 3000,
+                                    location: 'middle',
+                                });
+                                //加入vm.list
+                                for (var i = 0; i < ret.data.article.data.length; i++) {
+                                    vm.article.push(ret.data.article.data[i]);
+                                }
+                            } else {
+                                api.toast({
+                                    msg: '没有数据啦',
+                                    duration: 3500,
+                                    location: 'bottom'
+                                });
+                                return false;
+                            }
+                        }
+                        vm.page += 1;
+                    } else {
+                        // alert(JSON.stringify(err));
+                    }
+                });
+            },
+            //轮播导航图片
+            swiper: function() {
+                var swiper = new Swiper('.swiper-container', {
+                    spaceBetween: 30,
+                    centeredSlides: true,
+                    autoplay: {
+                        delay: 3000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                });
+            },
+            //打开新闻详细
+            openArticle: function(index) {
+                api.openWin({
+                    name: 'articleContent',
+                    url: 'widget://html/articleContent.html',
+                    pageParam: {
+                        id: vm.article[index].id,
+                        title: vm.article[index].title,
+                    }
+                });
+            },
+
+        }
+
+    });
+</script>
+
+</html>

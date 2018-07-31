@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui/aui.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="app" class=".aui-content">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+    //初始化加载
+    apiready = function() {
+        vm.init();
+    };
+
+    //vue加载
+    var vm = new Vue({
+        el: "#app",
+        data: {},
+        methods: {
+            init: function() {
+
+            },
+            others: function() {
+
+            },
+            /*添加其它方法*/
+        }
+    });
+</script>
+
+</html>

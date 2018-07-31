@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>文章内容页</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui/aui.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="app" class="aui-content">
+        <header class="aui-bar aui-bar-nav">
+            <a class="aui-pull-left aui-btn" onclick="closewin()">
+                <span class="aui-iconfont aui-icon-left"></span>
+            </a>
+            <div class="aui-title">{{ title }}</div>
+        </header>
+        <div class=" aui-margin-b-15">
+            <ul class="aui-list aui-media-list">
+                <li class="aui-list-item">
+                    <div class="aui-media-list-item-inner">
+                        <div class="aui-list-item-inner">
+
+                            <div class="aui-list-item-text">
+                                <div class="aui-list-item-title aui-font-size-14">{{ title }}</div>
+                            </div>
+
+                            <div class="aui-list-item-text aui-padded-t-10">
+                                <div class="aui-font-size-12 aui-padded-b-5">
+                                    <span class="aui-text-danger">摘要：</span> {{ info.abstract }}
+                                </div>
+                            </div>
+
+                            <div class="aui-list-item-text aui-padded-t-10">
+                                <p v-html="info.content"></p>
+                            </div>
+
+                            <div class="aui-info aui-margin-t-5 aui-font-size-12">
+                                <div class="aui-info-item">
+                                    <span class="aui-margin-l-5">{{ info.author }}</span>
+                                </div>
+                                <div class="aui-info-item">{{ info.create_time }}</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        vm.id = api.pageParam.id;
+        vm.title = api.pageParam.title;
+        $api.fixStatusBar($api.dom('header'));
+        $api.fixIos7Bar($api.dom('header'));
+        vm.init();
+    };
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            id: 0,
+            title: '',
+            info: [],
+        },
+        methods: {
+            init: function() {
+                api.ajax({
+                    url: article_url,
+                    method: 'post',
+                    data: {
+                      values: {
+                          id: vm.id
+                      }
+                    }
+                }, function(ret, err) {
+                    if (ret) {
+                        //  alert( JSON.stringify( ret ) );
+                        vm.info = ret.data.info;
+                    } else {
+                        // alert(JSON.stringify(err));
+                    }
+                });
+
+            }
+        }
+    });
+</script>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui/aui.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="app" class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-media-list">
+            <li class="aui-list-item" v-for="(vo,index) in list">
+                <div class="aui-media-list-item-inner" v-on:click="openArticle(index)">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-text">
+                            <div class="aui-list-item-title aui-font-size-14">{{ vo.title }}</div>
+                        </div>
+                        <div class="aui-info aui-margin-t-5 aui-font-size-12" style="padding:0">
+                            <div class="aui-info-item">
+                                <span class="aui-margin-l-5">{{ vo.author }}</span>
+                            </div>
+                            <div class="aui-info-item">{{ vo.create_time }}</div>
+                        </div>
+                    </div>
+                    <div class="aui-list-item-media">
+                        <img v-bind:src="vo.url">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var cid = api.pageParam.cid;
+        vm.init(cid);
+
+        //监听前一个页面传过来的cid值是否有变化
+        api.addEventListener({
+            name: 'listenCid'
+        }, function(ret, err) {
+            if (ret) {
+                //  alert( JSON.stringify( ret ) );
+                if (ret.value.cid && ret.value.cid != cid) {
+                    cid = ret.value.cid;
+                    vm.init(cid);
+                }
+            } else {
+                //  alert( JSON.stringify( err ) );
+            }
+        });
+
+    };
+
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            cid: 0,
+            list: {},
+            page: 1,
+        },
+        methods: {
+            init: function(cid) {
+                api.ajax({
+                    url: 'http://studyfox.ganjie.biz/app/article/',
+                    method: 'post',
+                    data: {
+                        values: {
+                            cid: cid,
+                        },
+                    }
+                }, function(ret, err) {
+                    if (ret) {
+                        // alert( JSON.stringify( ret ) );
+                        vm.list = ret.data.article;
+                    } else {
+                        // alert( JSON.stringify( err ) );
+                    }
+                });
+            },
+
+            //打开新闻详细
+            openArticle: function(index) {
+                api.openWin({
+                    name: 'articleContent',
+                    url: 'widget://html/articleContent.html',
+                    pageParam: {
+                        id: vm.list[index].id,
+                        title: vm.list[index].title,
+                    }
+                });
+            },
+        }
+
+    });
+</script>
+
+</html>

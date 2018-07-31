@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>用户登录</title>
+    <link rel="stylesheet" type="text/css" href="../css/aui/aui.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="app" class=".aui-content" style="margin:8%;">
+        <div class="aui-list">
+            <div class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label-icon">
+                        <i class="aui-iconfont aui-icon-mobile"></i>
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input id="mobile" type="number" v-model="mobile" placeholder="请输入手机号">
+                    </div>
+                </div>
+            </div>
+            <div class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label-icon">
+                        <i class="aui-iconfont aui-icon-lock"></i>
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input id="password" type="password" v-model="password" placeholder="请输入密码">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="aui-content aui-margin-t-15">
+            <p>
+                <div class="aui-btn aui-btn-info aui-btn-block" v-on:click="userLogin()">登录</div>
+            </p>
+        </div>
+
+        <section class="aui-content aui-margin-t-15">
+            <h6 class="aui-text-info aui-pull-right" v-on:click="userRegister()">注册</h6>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript">
+    //app初始化加载
+    apiready = function() {
+      vm.init();
+
+    };
+
+
+    //vue加载
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            mobile: '',
+            password: '',
+            deviceid: '',
+            token:'',
+            userInfo:[],
+        },
+        methods: {
+            init: function() {
+            },
+            //用户登录
+            userLogin: function() {
+
+            },
+            //用户注册
+            userRegister: function() {
+
+            },
+            //用户状态
+            userStatus:function(){
+
+            },
+            //用户中心
+            userCenter:function(){
+                api.openWin({
+                    name: 'userCenter',
+                    // url: 'widget://html/userCenter.html',
+                    url: 'widget://html/user.html',
+                });
+            },
+            /*添加其它方法*/
+        }
+    });
+</script>
+
+</html>
